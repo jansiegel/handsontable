@@ -29,7 +29,7 @@
  * FROM USE OR INABILITY TO USE THIS SOFTWARE.
  * 
  * Version: 8.1.0
- * Release date: 01/10/2020 (built at 01/10/2020 12:44:44)
+ * Release date: 01/10/2020 (built at 14/10/2020 15:21:46)
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -5679,6 +5679,7 @@ var REGISTERED_HOOKS = [
  * @param {number} amount Number of newly created rows in the data source array.
  * @param {string} [source] String that identifies source of hook call
  *                          ([list of all available sources]{@link https://handsontable.com/docs/tutorial-using-callbacks.html#page-source-definition}).
+ * @returns {*|boolean} If false is returned the action is canceled.
  */
 'beforeCreateRow',
 /**
@@ -6079,6 +6080,7 @@ var REGISTERED_HOOKS = [
  * @param {CellCoords} start Object containing information about first filled cell: `{row: 2, col: 0}`.
  * @param {CellCoords} end Object containing information about last filled cell: `{row: 4, col: 1}`.
  * @param {Array[]} data 2D array containing information about fill pattern: `[["1", "Ted"], ["1", "John"]]`.
+ * @returns {*|boolean} If false is returned the action is canceled.
  */
 'beforeAutofill',
 /**
@@ -6179,6 +6181,7 @@ var REGISTERED_HOOKS = [
  * @param {number} column Visual column index.
  * @param {string} key The removed meta key.
  * @param {*} value Value which is under removed key of cell meta.
+ * @returns {*|boolean} If false is returned the action is canceled.
  */
 'beforeRemoveCellMeta',
 /**
@@ -6271,6 +6274,7 @@ var REGISTERED_HOOKS = [
  * @param {number} amount Amount of columns to be removed.
  * @param {number[]} physicalColumns An array of physical columns removed from the data source.
  * @param {string} [source] String that identifies source of hook call ([list of all available sources]{@link https://handsontable.com/docs/tutorial-using-callbacks.html#page-source-definition}).
+ * @returns {*|boolean} If false is returned the action is canceled.
  */
 'beforeRemoveCol',
 /**
@@ -6281,6 +6285,7 @@ var REGISTERED_HOOKS = [
  * @param {number} amount Amount of rows to be removed.
  * @param {number[]} physicalRows An array of physical rows removed from the data source.
  * @param {string} [source] String that identifies source of hook call ([list of all available sources]{@link https://handsontable.com/docs/tutorial-using-callbacks.html#page-source-definition}).
+ * @returns {*|boolean} If false is returned the action is canceled.
  */
 'beforeRemoveRow',
 /**
@@ -6301,6 +6306,7 @@ var REGISTERED_HOOKS = [
  * @param {number} column Visual column index.
  * @param {string} key The updated meta key.
  * @param {*} value The updated meta value.
+ * @returns {*|boolean} If false is returned the action is canceled.
  */
 'beforeSetCellMeta',
 /**
@@ -6654,6 +6660,7 @@ var REGISTERED_HOOKS = [
  * @param {number} finalIndex Visual row index, being a start index for the moved rows. Points to where the elements will be placed after the moving action. To check visualization of final index please take a look at [documentation](/docs/demo-moving.html).
  * @param {number|undefined} dropIndex Visual row index, being a drop index for the moved rows. Points to where we are going to drop the moved elements. To check visualization of drop index please take a look at [documentation](/docs/demo-moving.html). It's `undefined` when `dragRows` function wasn't called.
  * @param {boolean} movePossible Indicates if it's possible to move rows to the desired position.
+ * @returns {*|boolean} If false is returned the action is canceled.
  */
 'beforeRowMove',
 /**
@@ -6801,6 +6808,7 @@ var REGISTERED_HOOKS = [
  * @event Hooks#beforeUndo
  * @param {object} action The action object. Contains information about the action being undone. The `actionType`
  *                        property of the object specifies the type of the action in a String format. (e.g. `'remove_row'`).
+ * @returns {*|boolean} If false is returned the action is canceled.
  */
 'beforeUndo',
 /**
@@ -6819,6 +6827,7 @@ var REGISTERED_HOOKS = [
  * @event Hooks#beforeRedo
  * @param {object} action The action object. Contains information about the action being redone. The `actionType`
  *                        property of the object specifies the type of the action in a String format (e.g. `'remove_row'`).
+ * @returns {*|boolean} If false is returned the action is canceled.
  */
 'beforeRedo',
 /**
@@ -15819,7 +15828,6 @@ var Overlay = /*#__PURE__*/function () {
     this.holder = holder;
     this.wtRootElement = wtRootElement;
     this.trimmingContainer = (0, _element.getTrimmingContainer)(this.hider.parentNode.parentNode);
-    this.areElementSizesAdjusted = false;
     this.updateStateOfRendering();
   }
   /**
@@ -47812,17 +47820,14 @@ var Overlays = /*#__PURE__*/function () {
     key: "refresh",
     value: function refresh() {
       var fastDraw = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      var spreader = this.wot.wtTable.spreader;
+      var width = spreader.clientWidth;
+      var height = spreader.clientHeight;
 
-      if (this.topOverlay.areElementSizesAdjusted && this.leftOverlay.areElementSizesAdjusted) {
-        var container = this.wot.wtTable.wtRootElement.parentNode || this.wot.wtTable.wtRootElement;
-        var width = container.clientWidth;
-        var height = container.clientHeight;
-
-        if (width !== this.spreaderLastSize.width || height !== this.spreaderLastSize.height) {
-          this.spreaderLastSize.width = width;
-          this.spreaderLastSize.height = height;
-          this.adjustElementsSize();
-        }
+      if (width !== this.spreaderLastSize.width || height !== this.spreaderLastSize.height) {
+        this.spreaderLastSize.width = width;
+        this.spreaderLastSize.height = height;
+        this.adjustElementsSize();
       }
 
       if (this.bottomOverlay.clone) {
@@ -47893,10 +47898,6 @@ var Overlays = /*#__PURE__*/function () {
 
       if (!wtTable.isVisible()) {
         return;
-      }
-
-      if (!this.topOverlay.areElementSizesAdjusted || !this.leftOverlay.areElementSizesAdjusted) {
-        this.adjustElementsSize();
       }
 
       this.topOverlay.applyToDOM();
@@ -63585,7 +63586,7 @@ Handsontable._getListenersCounter = _eventManager.getListenersCounter; // For Me
 Handsontable._getRegisteredMapsCounter = _mapCollection.getRegisteredMapsCounter; // For MemoryLeak tests
 
 Handsontable.packageName = 'handsontable';
-Handsontable.buildDate = "01/10/2020 12:44:44";
+Handsontable.buildDate = "14/10/2020 15:21:46";
 Handsontable.version = "8.1.0"; // Export Hooks singleton
 
 Handsontable.hooks = _pluginHooks.default.getSingleton(); // TODO: Remove this exports after rewrite tests about this module
@@ -66214,10 +66215,6 @@ var LeftOverlay = /*#__PURE__*/function (_Overlay) {
       if (this.needFullRender || force) {
         this.adjustRootElementSize();
         this.adjustRootChildrenSize();
-
-        if (!force) {
-          this.areElementSizesAdjusted = true;
-        }
       }
     }
     /**
@@ -66279,10 +66276,6 @@ var LeftOverlay = /*#__PURE__*/function (_Overlay) {
     key: "applyToDOM",
     value: function applyToDOM() {
       var total = this.wot.getSetting('totalColumns');
-
-      if (!this.areElementSizesAdjusted) {
-        this.adjustElementsSize();
-      }
 
       if (typeof this.wot.wtViewport.columnsRenderCalculator.startPosition === 'number') {
         this.spreader.style.left = "".concat(this.wot.wtViewport.columnsRenderCalculator.startPosition, "px");
@@ -66727,10 +66720,6 @@ var TopOverlay = /*#__PURE__*/function (_Overlay) {
       if (this.needFullRender || force) {
         this.adjustRootElementSize();
         this.adjustRootChildrenSize();
-
-        if (!force) {
-          this.areElementSizesAdjusted = true;
-        }
       }
     }
     /**
@@ -66797,10 +66786,6 @@ var TopOverlay = /*#__PURE__*/function (_Overlay) {
     key: "applyToDOM",
     value: function applyToDOM() {
       var total = this.wot.getSetting('totalRows');
-
-      if (!this.areElementSizesAdjusted) {
-        this.adjustElementsSize();
-      }
 
       if (typeof this.wot.wtViewport.rowsRenderCalculator.startPosition === 'number') {
         this.spreader.style.top = "".concat(this.wot.wtViewport.rowsRenderCalculator.startPosition, "px");
@@ -67470,10 +67455,6 @@ var BottomOverlay = /*#__PURE__*/function (_Overlay) {
       if (this.needFullRender || force) {
         this.adjustRootElementSize();
         this.adjustRootChildrenSize();
-
-        if (!force) {
-          this.areElementSizesAdjusted = true;
-        }
       }
     }
     /**
@@ -67534,10 +67515,6 @@ var BottomOverlay = /*#__PURE__*/function (_Overlay) {
     key: "applyToDOM",
     value: function applyToDOM() {
       var total = this.wot.getSetting('totalRows');
-
-      if (!this.areElementSizesAdjusted) {
-        this.adjustElementsSize();
-      }
 
       if (typeof this.wot.wtViewport.rowsRenderCalculator.startPosition === 'number') {
         this.spreader.style.top = "".concat(this.wot.wtViewport.rowsRenderCalculator.startPosition, "px");
@@ -116878,10 +116855,8 @@ var HiddenColumns = /*#__PURE__*/function (_BasePlugin) {
   }, {
     key: "onAfterGetCellMeta",
     value: function onAfterGetCellMeta(row, column, cellProperties) {
-      if ((0, _classPrivateFieldGet2.default)(this, _settings).copyPasteEnabled === false && this.isHidden(column)) {
-        // Cell property handled by the `Autofill` and the `CopyPaste` plugins.
-        cellProperties.skipColumnOnPaste = true;
-      }
+      // Cell property handled by the `Autofill` and the `CopyPaste` plugins.
+      cellProperties.skipColumnOnPaste = (0, _classPrivateFieldGet2.default)(this, _settings).copyPasteEnabled === false && this.isHidden(column);
 
       if (this.isHidden(column - 1)) {
         cellProperties.className = cellProperties.className || '';
@@ -117718,10 +117693,8 @@ var HiddenRows = /*#__PURE__*/function (_BasePlugin) {
   }, {
     key: "onAfterGetCellMeta",
     value: function onAfterGetCellMeta(row, column, cellProperties) {
-      if ((0, _classPrivateFieldGet2.default)(this, _settings).copyPasteEnabled === false && this.isHidden(row)) {
-        // Cell property handled by the `Autofill` and the `CopyPaste` plugins.
-        cellProperties.skipRowOnPaste = true;
-      }
+      // Cell property handled by the `Autofill` and the `CopyPaste` plugins.
+      cellProperties.skipRowOnPaste = (0, _classPrivateFieldGet2.default)(this, _settings).copyPasteEnabled === false && this.isHidden(row);
 
       if (this.isHidden(row - 1)) {
         cellProperties.className = cellProperties.className || '';
